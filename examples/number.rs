@@ -2,9 +2,9 @@ use eframe::NativeOptions;
 use egui_typed_input::ValText;
 
 fn main() {
-    let mut int: ValText<i32> = ValText::number_int();
-    let mut uint: ValText<u32> = ValText::number_uint();
-    let mut float: ValText<f32> = ValText::number();
+    let mut int: ValText<i32, _> = ValText::number_int();
+    let mut uint: ValText<u32, _> = ValText::number_uint();
+    let mut float: ValText<f32, _> = ValText::number();
 
     eframe::run_simple_native(
         "number input",

@@ -11,7 +11,7 @@ fn main() {
             egui::CentralPanel::default().show(ctx, |ui| {
                 ui.text_edit_singleline(&mut color);
                 println!("{:?}", color.get_val());
-                if let Some(color) = color.get_val() {
+                if let Some(Ok(color)) = color.get_val() {
                     ui.colored_label(color.clone(), format!("{:?}", color));
                 }
             });
