@@ -1,20 +1,47 @@
 #![warn(clippy::all)]
 
 use core::{fmt::Display, str::FromStr};
+use egui::TextBuffer;
 
-use egui::{Color32, TextBuffer};
-
-// macro_rules! valtext_shcema {
-//     ($fn:fn) => {
-        
-//     };
-// }
+mod impls;
 
 /// A mutable TextBuffer that will validate it's contents when changed.
 /// And check an input before adding it to the text.
 ///
 /// The default validator will simply attempt to parse the text as `T`,
 /// but a custom validator function can be provided.
+///
+/// ## Usage
+/// ```
+/// use egui_typed_input::ValText;
+///
+/// # fn main() {
+/// let mut alphabetical_order: ValText<Vec<char>, ()> = ValText::new(
+///     // parser
+///     (|str| Ok(str.chars().collect::<Vec<_>>())),
+///     // input validator
+///     (|current_text, input, index| {
+///         if input.chars().all(|c| c.is_ascii_alphabetic()) {
+///             input.chars().all(|c| {
+///                 c.to_ascii_lowercase() >= current_text.chars().skip(index.saturating_sub(1)).take(1).last().unwrap_or('a')
+///             })
+///         } else { false }
+///     }),
+/// );
+///
+/// # eframe::run_simple_native(
+/// #    "number input",
+/// #    eframe::NativeOptions::default(),
+/// #    move |ctx, _frame| {
+/// #        egui::CentralPanel::default().show(ctx, |ui| {
+/// ui.text_edit_singleline(&mut alphabetical_order);
+/// println!("alphabetical_order: {:?}", alphabetical_order.get_val());
+/// #        });
+/// #    }
+/// # ).unwrap();
+/// # }
+/// ```
+/// See hex color example (color_hex.rs) and number examples (number.rs) for more
 pub struct ValText<T, E> {
     text: String,
     parsed_val: Option<Result<T, E>>,
@@ -22,10 +49,35 @@ pub struct ValText<T, E> {
     value_parser: Box<dyn Fn(&str) -> Result<T, E>>,
     #[allow(clippy::type_complexity)]
     /// Whether a user input should be added to the string at index
+    ///
+    /// The signature is `(current_text, input, insertion_index) -> should_add_to_text`
+    /// 
+    /// Note: insertion_index is a character index, not a byte index.
     input_validator: Box<dyn Fn(&str, &str, usize) -> bool>,
 }
 
 impl<T, E> ValText<T, E> {
+    #[must_use]
+    pub fn new(value_parser: impl Fn(&str) -> Result<T, E> + 'static, input_validator: impl Fn(&str, &str, usize) -> bool + 'static) -> Self {
+        ValText {
+            text: String::new(),
+            parsed_val: None,
+            value_parser: Box::new(value_parser),
+            input_validator: Box::new(input_validator),
+        }
+    }
+
+    #[must_use]
+    pub fn new_box(value_parser: Box<dyn Fn(&str) -> Result<T, E>>, input_validator: Box<dyn Fn(&str, &str, usize) -> bool>) -> Self {
+        ValText {
+            text: String::new(),
+            parsed_val: None,
+            value_parser: value_parser,
+            input_validator: input_validator,
+        }
+    }
+
+    #[must_use]
     pub fn with_parser(validator: impl Fn(&str) -> Result<T, E> + 'static) -> Self {
         Self {
             text: String::new(),
@@ -36,12 +88,20 @@ impl<T, E> ValText<T, E> {
     }
 
     /// Only chars in `charset` can be input
-    pub fn with_parser_fixed_charset(validator: impl Fn(&str) -> Result<T, E> + 'static, charset: &'static [char]) -> Self {
+    /// ## Usage
+    /// ```
+    /// # use egui_typed_input::ValText;
+    /// # let _: ValText<_, ()> =
+    /// ValText::with_parser_fixed_charset(|str| Ok(str.to_owned()), &['a', 'c']);
+    /// ```
+    /// Would allow 'a' and 'c' but no others.
+    #[must_use]
+    pub fn with_parser_fixed_charset(parser: impl Fn(&str) -> Result<T, E> + 'static, charset: &'static [char]) -> Self {
         Self {
             text: String::new(),
             parsed_val: None,
-            value_parser: Box::new(validator),
-            input_validator: Box::new(|_, s, _| !s.chars().any(|c| !charset.contains(&c))),
+            value_parser: Box::new(parser),
+            input_validator: Box::new(|_, s, _| s.chars().all(|c| charset.contains(&c))),
         }
     }
 
@@ -55,24 +115,6 @@ impl<T, E> ValText<T, E> {
 
     pub fn is_valid(&self) -> bool {
         self.parsed_val.as_ref().map(|res| res.is_ok()).unwrap_or(false)
-    }
-}
-
-impl ValText<Color32, egui::ecolor::ParseHexColorError> {
-    pub fn color_hex() -> Self {
-        Self {
-            text: String::new(),
-            parsed_val: Some(Err(egui::ecolor::ParseHexColorError::MissingHash)),
-            value_parser: Box::new(|str| {
-                Color32::from_hex(str)
-            }),
-            input_validator: Box::new(|_, s, i| {
-                if i == 0 {
-                    return s.starts_with('#');
-                }
-                s.chars().all(|c| c.is_ascii_hexdigit())
-            }),
-        }
     }
 }
 
@@ -93,63 +135,6 @@ impl<T: FromStr> ValText<Option<T>, T::Err> {
     }
 }
 
-impl<T: FromStr> ValText<T, T::Err> {
-    /// Only allows (0,1,2,3,4,5,6,7,8,9,.) and (-,+) at the beginning
-    pub fn number() -> Self {
-        Self {
-            text: String::new(),
-            parsed_val: None,
-            value_parser: Box::new(|str| {
-                str.parse()
-            }),
-            input_validator: Box::new(|current_text, s, i| {
-                let current_has_no_dot = !current_text.contains('.');
-                (if i == 0 {
-                    s.starts_with('+') || s.starts_with('-')
-                } else { false })
-                || s.chars().all(|c| {
-                    (if current_has_no_dot { c == '.' } else { false })
-                    || c.is_ascii_digit()
-                })
-            })
-        }
-    }
-
-    /// Only allows (0,1,2,3,4,5,6,7,8,9) and (-,+) at the beginning
-    pub fn number_int() -> Self {
-        Self {
-            text: String::new(),
-            parsed_val: None,
-            value_parser: Box::new(|str| {
-                str.parse()
-            }),
-            input_validator: Box::new(|_, s, i| {
-                (if i == 0 {
-                    s.starts_with('+') || s.starts_with('-')
-                } else { false })
-                || s.chars().all(|c| c.is_ascii_digit())
-            })
-        }
-    }
-
-    /// Only allows (0,1,2,3,4,5,6,7,8,9) and (+) at the beginning
-    pub fn number_uint() -> Self {
-        Self {
-            text: String::new(),
-            parsed_val: None,
-            value_parser: Box::new(|str| {
-                str.parse()
-            }),
-            input_validator: Box::new(|_, s, i| {
-                (if i == 0 {
-                    s.starts_with('+')
-                } else { false })
-                || s.chars().all(|c| c.is_ascii_digit())
-            })
-        }
-    }
-}
-
 impl<T: Display, E> ValText<T, E> {
     pub fn set_val(&mut self, val: T) {
         self.text = val.to_string();
@@ -161,8 +146,8 @@ impl<T: FromStr> Default for ValText<T, T::Err> {
     /// Parse the text using `FromStr`
     fn default() -> Self {
         Self {
-            text: Default::default(),
-            parsed_val: Default::default(),
+            text: String::new(),
+            parsed_val: None,
             value_parser: Box::new(|text| text.parse()),
             input_validator: Box::new(|_, _, _| true),
         }
