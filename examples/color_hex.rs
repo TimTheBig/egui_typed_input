@@ -15,6 +15,6 @@ fn main() {
                     ui.colored_label(color.clone(), format!("{:?}", color));
                 }
             });
-        }
+        },
     ).unwrap();
 }

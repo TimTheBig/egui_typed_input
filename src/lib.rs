@@ -50,14 +50,17 @@ pub struct ValText<T, E> {
     /// Whether a user input should be added to the string at index
     ///
     /// The signature is `(current_text, input, insertion_index) -> should_add_to_text`
-    /// 
+    ///
     /// Note: insertion_index is a character index, not a byte index.
     input_validator: Box<dyn Fn(&str, &str, usize) -> bool>,
 }
 
 impl<T, E> ValText<T, E> {
     #[must_use]
-    pub fn new(value_parser: impl Fn(&str) -> Result<T, E> + 'static, input_validator: impl Fn(&str, &str, usize) -> bool + 'static) -> Self {
+    pub fn new(
+        value_parser: impl Fn(&str) -> Result<T, E> + 'static,
+        input_validator: impl Fn(&str, &str, usize) -> bool + 'static,
+    ) -> Self {
         ValText {
             text: String::new(),
             parsed_val: None,
@@ -67,7 +70,10 @@ impl<T, E> ValText<T, E> {
     }
 
     #[must_use]
-    pub fn new_box(value_parser: Box<dyn Fn(&str) -> Result<T, E>>, input_validator: Box<dyn Fn(&str, &str, usize) -> bool>) -> Self {
+    pub fn new_box(
+        value_parser: Box<dyn Fn(&str) -> Result<T, E>>,
+        input_validator: Box<dyn Fn(&str, &str, usize) -> bool>,
+    ) -> Self {
         ValText {
             text: String::new(),
             parsed_val: None,
@@ -95,7 +101,10 @@ impl<T, E> ValText<T, E> {
     /// ```
     /// Would allow 'a' and 'c' but no others.
     #[must_use]
-    pub fn with_parser_fixed_charset(parser: impl Fn(&str) -> Result<T, E> + 'static, charset: &'static [char]) -> Self {
+    pub fn with_parser_fixed_charset(
+        parser: impl Fn(&str) -> Result<T, E> + 'static,
+        charset: &'static [char],
+    ) -> Self {
         Self {
             text: String::new(),
             parsed_val: None,
@@ -113,7 +122,8 @@ impl<T, E> ValText<T, E> {
     }
 
     pub fn is_valid(&self) -> bool {
-        self.parsed_val.as_ref().map(|res| res.is_ok()).unwrap_or(false)
+        self.parsed_val.as_ref().map(|res| res.is_ok())
+            .unwrap_or(false)
     }
 }
 

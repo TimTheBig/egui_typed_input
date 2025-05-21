@@ -24,6 +24,6 @@ fn main() {
                     assert!(*percentage <= 100.0);
                 }
             });
-        }
+        },
     ).unwrap();
 }

@@ -21,6 +21,6 @@ fn main() {
                 ui.text_edit_singleline(&mut float);
                 println!("float: {:?}", float.get_val());
             });
-        }
+        },
     ).unwrap();
 }

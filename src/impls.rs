@@ -11,9 +11,7 @@ impl ValText<Color32, egui::ecolor::ParseHexColorError> {
         Self {
             text: String::new(),
             parsed_val: Some(Err(egui::ecolor::ParseHexColorError::MissingHash)),
-            value_parser: Box::new(|str| {
-                Color32::from_hex(str)
-            }),
+            value_parser: Box::new(|str| Color32::from_hex(str)),
             input_validator: Box::new(|_, s, i| {
                 if i == 0 {
                     return s.starts_with('#');
@@ -31,9 +29,7 @@ impl<T: FromStr> ValText<T, T::Err> {
         Self {
             text: String::new(),
             parsed_val: None,
-            value_parser: Box::new(|str| {
-                str.parse()
-            }),
+            value_parser: Box::new(|str| str.parse()),
             input_validator: Box::new(|current_text, s, i| {
                 let current_has_no_dot = !current_text.contains('.');
                 (if i == 0 {
@@ -43,7 +39,7 @@ impl<T: FromStr> ValText<T, T::Err> {
                     (if current_has_no_dot { c == '.' } else { false })
                     || c.is_ascii_digit()
                 })
-            })
+            }),
         }
     }
 
@@ -53,9 +49,7 @@ impl<T: FromStr> ValText<T, T::Err> {
         Self {
             text: String::new(),
             parsed_val: None,
-            value_parser: Box::new(|str| {
-                str.parse()
-            }),
+            value_parser: Box::new(|str| str.parse()),
             input_validator: Box::new(|_, s, i| {
                 (if i == 0 {
                     s.starts_with('+') || s.starts_with('-')
@@ -71,9 +65,7 @@ impl<T: FromStr> ValText<T, T::Err> {
         Self {
             text: String::new(),
             parsed_val: None,
-            value_parser: Box::new(|str| {
-                str.parse()
-            }),
+            value_parser: Box::new(|str| str.parse()),
             input_validator: Box::new(|_, s, i| {
                 (if i == 0 {
                     s.starts_with('+')
@@ -126,7 +118,9 @@ impl ValText<f64, PercentageParseError> {
                 let current_text_no_des_len = current_text.split_once('.')
                     .map(|(pre_dot, _)| pre_dot.len())
                     .unwrap_or(current_text.len());
-                if current_text_no_des_len + s.len() > 3 && !current_text.contains('.') { return false; }
+                if current_text_no_des_len + s.len() > 3 && !current_text.contains('.') {
+                    return false;
+                }
 
                 let current_has_no_dot = !current_text.contains('.');
                 let all_num_or_dot = s.chars().all(|c| {
@@ -134,7 +128,10 @@ impl ValText<f64, PercentageParseError> {
                     || c.is_ascii_digit()
                 });
 
-                if !current_text.is_empty() && current_text.as_bytes()[i.saturating_sub(1)] == b'.' && all_num_or_dot {
+                if !current_text.is_empty()
+                    && current_text.as_bytes()[i.saturating_sub(1)] == b'.'
+                    && all_num_or_dot
+                {
                     return true;
                 }
 
@@ -152,7 +149,7 @@ impl ValText<f64, PercentageParseError> {
                     s.starts_with('+')
                 } else { false })
                 || all_num_or_dot
-            })
+            }),
         }
     }
 }
@@ -184,15 +181,20 @@ impl ValText<f32, PercentageParseError> {
                 let current_text_no_des_len = current_text.split_once('.')
                     .map(|(pre_dot, _)| pre_dot.len())
                     .unwrap_or(current_text.len());
-                if current_text_no_des_len + s.len() > 3 && !current_text.contains('.') { return false; }
-                
+                if current_text_no_des_len + s.len() > 3 && !current_text.contains('.') {
+                    return false;
+                }
+
                 let current_has_no_dot = !current_text.contains('.');
                 let all_num_or_dot = s.chars().all(|c| {
                     (if current_has_no_dot { c == '.' } else { false })
                     || c.is_ascii_digit()
                 });
 
-                if !current_text.is_empty() && current_text.as_bytes()[i.saturating_sub(1)] == b'.' && all_num_or_dot {
+                if !current_text.is_empty()
+                    && current_text.as_bytes()[i.saturating_sub(1)] == b'.'
+                    && all_num_or_dot
+                {
                     return true;
                 }
 
@@ -210,7 +212,7 @@ impl ValText<f32, PercentageParseError> {
                     s.starts_with('+')
                 } else { false })
                 || all_num_or_dot
-            })
+            }),
         }
     }
 }
@@ -237,7 +239,9 @@ impl ValText<u32, PercentageParseError> {
                 }
             }),
             input_validator: Box::new(|current_text, s, i| {
-                if current_text.len() + s.len() > 3 { return false; }
+                if current_text.len() + s.len() > 3 {
+                    return false;
+                }
 
                 // only allow therd char if others are 00
                 if current_text.len() == 2 {
@@ -251,7 +255,7 @@ impl ValText<u32, PercentageParseError> {
                     s.starts_with('+')
                 } else { false })
                 || s.chars().all(|c| c.is_ascii_digit())
-            })
+            }),
         }
     }
 }
