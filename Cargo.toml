@@ -2,10 +2,21 @@
 name = "egui_typed_input"
 version = "0.1.0"
 edition = "2024"
+description = "Input checked and type safe parsed egui text inputs"
+authors = ["TimTheBig"]
+
+readme = "README.md"
+documentation = "https://docs.rs/egui_typed_input"
+repository = "https://github.com/TimTheBig/egui_typed_input"
+
+keywords = ["egui", "text edit", "type checked"]
+categories = ["gui"]
+
 # based on work from BfBB-Clash
 
 [dependencies]
 egui = { version = "0.31", default-features = false }
+thiserror = "2.0"
 
 [dev-dependencies]
 eframe = "0.31"
