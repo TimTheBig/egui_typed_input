@@ -127,14 +127,14 @@ impl ValText<f64, PercentageParseError> {
                     .map(|(pre_dot, _)| pre_dot.len())
                     .unwrap_or(current_text.len());
                 if current_text_no_des_len + s.len() > 3 && !current_text.contains('.') { return false; }
-                
+
                 let current_has_no_dot = !current_text.contains('.');
                 let all_num_or_dot = s.chars().all(|c| {
                     (if current_has_no_dot { c == '.' } else { false })
                     || c.is_ascii_digit()
                 });
 
-                if current_text.len() > 0 && current_text.as_bytes()[i.saturating_sub(1)] == b'.' && all_num_or_dot {
+                if !current_text.is_empty() && current_text.as_bytes()[i.saturating_sub(1)] == b'.' && all_num_or_dot {
                     return true;
                 }
 
@@ -144,9 +144,8 @@ impl ValText<f64, PercentageParseError> {
                         return true;
                     } else if s == "0" {
                         return current_text.starts_with("10") && !current_text.contains('.');
-                    } else {
-                        return false;
                     }
+                    return false;
                 }
 
                 (if i == 0 {
@@ -193,7 +192,7 @@ impl ValText<f32, PercentageParseError> {
                     || c.is_ascii_digit()
                 });
 
-                if current_text.len() > 0 && current_text.as_bytes()[i.saturating_sub(1)] == b'.' && all_num_or_dot {
+                if !current_text.is_empty() && current_text.as_bytes()[i.saturating_sub(1)] == b'.' && all_num_or_dot {
                     return true;
                 }
 
@@ -203,9 +202,8 @@ impl ValText<f32, PercentageParseError> {
                         return true;
                     } else if s == "0" {
                         return current_text.starts_with("10") && !current_text.contains('.');
-                    } else {
-                        return false;
                     }
+                    return false;
                 }
 
                 (if i == 0 {
@@ -245,9 +243,8 @@ impl ValText<u32, PercentageParseError> {
                 if current_text.len() == 2 {
                     if s == "0" {
                         return current_text.starts_with("10");
-                    } else {
-                        return false;
                     }
+                    return false;
                 }
 
                 (if i == 0 {

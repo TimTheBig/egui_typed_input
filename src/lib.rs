@@ -1,11 +1,12 @@
 #![warn(clippy::all)]
+#![allow(clippy::type_complexity)]
 
 use core::{fmt::Display, str::FromStr};
 use egui::TextBuffer;
 
 mod impls;
 
-/// A mutable TextBuffer that will validate it's contents when changed.
+/// A mutable `TextBuffer` that will validate it's contents when changed.\
 /// And check an input before adding it to the text.
 ///
 /// The default validator will simply attempt to parse the text as `T`,
@@ -45,9 +46,7 @@ mod impls;
 pub struct ValText<T, E> {
     text: String,
     parsed_val: Option<Result<T, E>>,
-    #[allow(clippy::type_complexity)]
     value_parser: Box<dyn Fn(&str) -> Result<T, E>>,
-    #[allow(clippy::type_complexity)]
     /// Whether a user input should be added to the string at index
     ///
     /// The signature is `(current_text, input, insertion_index) -> should_add_to_text`
@@ -72,8 +71,8 @@ impl<T, E> ValText<T, E> {
         ValText {
             text: String::new(),
             parsed_val: None,
-            value_parser: value_parser,
-            input_validator: input_validator,
+            value_parser,
+            input_validator,
         }
     }
 
