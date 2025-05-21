@@ -3,7 +3,7 @@ name = "egui-typed-input"
 version = "0.1.0"
 edition = "2024"
 description = "Type safe parsed egui text inputs, with input checking"
-# based on work from BfBB-Clash
+# based on work from SquareMan and BfBB-Clash
 authors = ["TimTheBig"]
 
 # same license as egui
