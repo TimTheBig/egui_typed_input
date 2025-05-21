@@ -31,7 +31,7 @@ mod impls;
 /// );
 ///
 /// # eframe::run_simple_native(
-/// #    "number input",
+/// #    "alphabetical order input",
 /// #    eframe::NativeOptions::default(),
 /// #    move |ctx, _frame| {
 /// #        egui::CentralPanel::default().show(ctx, |ui| {
