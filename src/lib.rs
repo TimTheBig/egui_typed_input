@@ -163,7 +163,7 @@ impl<T: FromStr> Default for ValText<T, T::Err> {
     }
 }
 
-impl<T, E> TextBuffer for ValText<T, E> {
+impl<T: 'static, E> TextBuffer for ValText<T, E> {
     fn is_mutable(&self) -> bool {
         true
     }
@@ -185,5 +185,9 @@ impl<T, E> TextBuffer for ValText<T, E> {
     fn delete_char_range(&mut self, char_range: std::ops::Range<usize>) {
         self.text.delete_char_range(char_range);
         self.parsed_val = Some((self.value_parser)(&self.text));
+    }
+
+    fn type_id(&self) -> std::any::TypeId {
+        std::any::TypeId::of::<T>()
     }
 }
