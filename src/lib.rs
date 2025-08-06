@@ -187,6 +187,16 @@ impl<T: 'static, E> TextBuffer for ValText<T, E> {
         self.parsed_val = Some((self.value_parser)(&self.text));
     }
 
+    fn clear(&mut self) {
+        self.parsed_val = None;
+        self.text.clear();
+    }
+
+    fn take(&mut self) -> String {
+        self.parsed_val = None;
+        self.text.take()
+    }
+
     fn type_id(&self) -> std::any::TypeId {
         std::any::TypeId::of::<T>()
     }
