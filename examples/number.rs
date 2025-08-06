@@ -1,9 +1,12 @@
+use std::num::NonZeroU64;
+
 use eframe::NativeOptions;
 use egui_typed_input::ValText;
 
 fn main() {
     let mut int: ValText<i32, _> = ValText::number_int();
     let mut uint: ValText<u32, _> = ValText::number_uint();
+    let mut non_zero_uint: ValText<NonZeroU64, _> = ValText::number_uint();
     let mut float: ValText<f32, _> = ValText::number();
 
     eframe::run_simple_native(
@@ -17,6 +20,9 @@ fn main() {
                 ui.label("unsigned int");
                 ui.text_edit_singleline(&mut uint);
                 println!("uint: {:?}", uint.get_val());
+                ui.label("non zero unsigned int");
+                ui.text_edit_singleline(&mut non_zero_uint);
+                println!("non zero uint: {:?}", non_zero_uint.get_val());
                 ui.label("float");
                 ui.text_edit_singleline(&mut float);
                 println!("float: {:?}", float.get_val());
