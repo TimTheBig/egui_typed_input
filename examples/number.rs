@@ -9,7 +9,7 @@ fn main() {
     let mut non_zero_uint: ValText<NonZeroU64, _> = ValText::number_uint();
     let mut float: ValText<f32, _> = ValText::number();
 
-    eframe::run_simple_native(
+    eframe::run_ui_native(
         "number input",
         NativeOptions::default(),
         move |ctx, _frame| {
@@ -28,5 +28,6 @@ fn main() {
                 println!("float: {:?}", float.get_val());
             });
         },
-    ).unwrap();
+    )
+    .unwrap();
 }

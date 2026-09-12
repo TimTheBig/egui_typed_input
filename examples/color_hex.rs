@@ -4,7 +4,7 @@ use egui_typed_input::ValText;
 fn main() {
     let mut color = ValText::color_hex();
 
-    eframe::run_simple_native(
+    eframe::run_ui_native(
         "hex color input",
         NativeOptions::default(),
         move |ctx, _frame| {
@@ -16,5 +16,6 @@ fn main() {
                 }
             });
         },
-    ).unwrap();
+    )
+    .unwrap();
 }

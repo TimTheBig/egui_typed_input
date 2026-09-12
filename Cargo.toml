@@ -17,8 +17,8 @@ keywords = ["egui", "text_edit", "type_checked", "egui_parse"]
 categories = ["gui", "parsing"]
 
 [dependencies]
-egui = { version = ">= 0.32, < 0.34", default-features = false }
+egui = { version = ">= 0.36", default-features = false }
 thiserror = "2.0"
 
 [dev-dependencies]
-eframe = ">= 0.32, < 0.34"
+eframe = ">= 0.36"

@@ -5,7 +5,7 @@ fn main() {
     let mut percentage_uint: ValText<u32, _> = ValText::percentage_uint();
     let mut percentage_float: ValText<f64, _> = ValText::<f64, _>::percentage();
 
-    eframe::run_simple_native(
+    eframe::run_ui_native(
         "percentage input",
         NativeOptions::default(),
         move |ctx, _frame| {
@@ -25,5 +25,6 @@ fn main() {
                 }
             });
         },
-    ).unwrap();
+    )
+    .unwrap();
 }

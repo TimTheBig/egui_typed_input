@@ -171,8 +171,8 @@ impl<T: 'static, E> TextBuffer for ValText<T, E> {
         self.text.as_str()
     }
 
-    fn insert_text(&mut self, text: &str, char_index: usize) -> usize {
-        if (self.input_validator)(&self.text, text, char_index) {
+    fn insert_text(&mut self, text: &str, char_index: egui::text::CharIndex) -> usize {
+        if (self.input_validator)(&self.text, text, char_index.into()) {
             let n = self.text.insert_text(text, char_index);
             self.parsed_val = Some((self.value_parser)(&self.text));
             n
@@ -181,7 +181,7 @@ impl<T: 'static, E> TextBuffer for ValText<T, E> {
         }
     }
 
-    fn delete_char_range(&mut self, char_range: std::ops::Range<usize>) {
+    fn delete_char_range(&mut self, char_range: std::ops::Range<egui::text::CharIndex>) {
         self.text.delete_char_range(char_range);
         self.parsed_val = Some((self.value_parser)(&self.text));
     }
